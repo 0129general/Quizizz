@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Quiz App Login</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script>
+      const CLIENT_ID = "YOUR_CLIENT_ID_HERE"; // Replace with your actual Client ID
+
+      function handleCredentialResponse(response) {
+        // Decode the ID token
+        const responsePayload = JSON.parse(atob(response.credential.split(".")[1]));
+
+        // Display the user's name or email
+        document.getElementById("loginSection").style.display = "none";
+        document.getElementById("quizSection").style.display = "block";
+        document.getElementById("userName").textContent = responsePayload.name;
+
+        console.log("User logged in:");
+        console.log(responsePayload);
+      }
+
+      window.onload = function () {
+        google.accounts.id.initialize({
+          client_id: CLIENT_ID,
+          callback: handleCredentialResponse,
+        });
+
+        google.accounts.id.renderButton(
+          document.getElementById("buttonDiv"),
+          { theme: "outline", size: "large" } // Customize button
+        );
+
+        google.accounts.id.prompt(); // Automatically prompt login if possible
+      };
+    </script>
+  </head>
+  <body>
+    <div id="loginSection">
+      <h2>Welcome to the Quiz App</h2>
+      <div id="buttonDiv"></div>
+    </div>
+
+    <div id="quizSection" style="display: none;">
+      <h3>Welcome <span id="userName"></span>!</h3>
+      <button onclick="logout()">Logout</button>
+    </div>
+
+    <script>
+      // Logout Function
+      function logout() {
+        google.accounts.id.disableAutoSelect();
+        document.getElementById("loginSection").style.display = "block";
+        document.getElementById("quizSection").style.display = "none";
+      }
+    </script>
+  </body>
+</html>
